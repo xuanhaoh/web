@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}" >
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+var emo=[]
+var smok=[]
+var names=[]
+
+function test(){
+    var a;
+    $.ajax({
+        type: 'POST',
+        url: "/test",
+        dataType: 'json', //注意：这里是指希望服务端返回json格式的数据
+        async: false,
+        success: function(data) {
+            console.log(data)
+            a = data// 这里的data就是json格式的数据
+            //console.log(a)
+        },
+        error: function(xhr, status, error) {
+            console.log(error);
+        }
+    });
+    alert(a['a'])
+}
+
+ function draw() {
+  names=[]
+  emo=[]
+  smok=[]
+  var e = document.getElementById("cars");
+  var n = e.options[e.selectedIndex].value;
+  //n 是从button提取出来的输入 比方说 Australia, VIC, NSW, ACT等等
+  if(n=='VIC'){
+    names=["Moreland","Yarra","Melbourne","Greater Geelong","Glen Eira","Boroondara","Alpine","Port Phillip","Frankson"]
+
+    smok=[17.09,14.34,14.59,20.87,13.08,10.80,22.40,14.83,22.51]
+    emo=[0.2005,0.3595,0.2499,0.2894,0.2175,0.2358,0.4758,0.2435,0.2154]
+
+  }
+  else if(n=='WA'){
+    names=["Albany","Augusta-Magaret River","Cockburn","Fremantle","Perth","Stirling","Wiluna","Wanneroo","Rockingham"]
+    smok=[23.16,20.40,19.06,17.14,16.03,16.71,13,14.36,19.22,26.92]
+    emo=[0.3670,0.0404,0.2383,0.2182,0.2829,0.4355,0.3496,0.2165,0.1021]
+
+  }
+  else if(n=='TAS'){
+    names=["Hobart","Launceston","Southern Midlands","Glamorgan-Spring Bay","Glenorchy","Clarence","Central Highlands","Huon Valley","Meander Valley"]
+    smok=[14.40,22.47,25.59,25.71,25.74,19.61,25.59,23.83,21.31]
+    emo=[0.3325,0.1964,0.0749,0.04,0.2474,0.04,0.6369,0.1443,0.4535]
+  }
+  else if(n=='SA'){
+    names=["Adelaide","Barossa","Ceduna","Holdfast Bay","Port Adelaide Enfield","Port Lincoln","Salibury","Onkaparinga"]
+    smok=[13.56,18.46,15,14.07,19.94,22.49,21.00,19.98]
+    emo=[0.2276,0.2965,0.04,0.10,0.5028,0.02,0.4182,0.3838]
+  }
+  else if(n=='QLD'){
+    names=["Cairns","Brisbanes","Ipswich","Fraser Coast","Gladstone","Gold Coast","Sunshine Coast","Toowoomba","Moreton Bay"]
+    smok=[22.38,14.52,22.01,25.26,20.36,19.04,19.27,19.96,20.21]
+    emo=[0.2750,0.3242,0.3215,0.3198,0.2386,0.2981,0.4040,0.0693,0.3499]
+
+  }
+  else if(n=='NT'){
+    names=["Alice Springs","Darwin","MacDonnell","Palmerston","West Arnhem","Katerine","Lichfield","Barkly","Tiwi Islands"]
+    smok=[22.65,20.36,20.22,24.63,22.11,26.28,22.14,21.22,20.01]
+    emo=[0.00517,0.0588,0.2707,0.0197,0.6372,0.4404,0.0000,0.3400,0.5365]
+  }
+  else if(n=='NSW'){
+    names=["Sydney","Newcastle","Wollongong","Wyong","Willoughby","Parramatta","Ballina","Bayside","Blacktown","Blue Moutains","Innder West","Northern Beach"]
+    smok=[13.64,17.28,17.73,21.76,8.66,14.12,18.48,19.77,16.53,15.24,22.56,9.97]
+    emo=[0.2207,0.3962,0.3122,0.0318,0.2464,0.0413,0.0536,0.1601,0.1372,0.19470,0.2958,0.2836]
+
+  }
+  else if(n=='ACT'){
+    names=["Acton","Aranda","Narrabundah","Turner","Molonglo","Canberra","Belconnen","Guangahlin","Greenway"]
+    smok=[13.05,12.72,11.87,13.05,32.96,24.56,13.60,11.80,16.13]
+    emo=[0.05,0,0.0602,0.2058,0.4884,0.2344,0.04,0.4926,0.3326]
+
+  }
+  else{
+    names=["ACT","NSW","NT","QLD","SA","TAS","VIC","WA"]
+    smok=[9.5,11.9,17.6,14.8,11.9,16.5,12.1,12.6]
+    emo=[0.2412,0.2334,0.2143,0.2711,0.2195,0.1910,0.2274,0.2544]
+
+
+  }
+
+ //以下是画图的部分
+  var chart = new CanvasJS.Chart("chartContainer",{
+    title:{
+      text: "Area twitter"
+    },
+    axisX:{
+      valueFormatString: "####",
+      interval: 1
+    },
+    axisY:[{
+      title: "Average of Sentiment scoring",
+      lineColor: "#369EAD",
+      titleFontColor: "#369EAD",
+      labelFontColor: "#369EAD"
+    },
+    {
+      title: "",
+      logarithmic: true,
+      lineColor: "#FDFEFE ",
+      titleFontColor: "#C24642",
+      labelFontColor: "#C24642"
+    }],
+    axisY2:[{
+      title: "Smoking rate %",
+      lineColor: "#7F6084",
+      titleFontColor: "#7F6084",
+      labelFontColor: "#7F6084"
+    },
+    {
+      title: "",
+      logarithmic: true,
+      interval: 1,
+      lineColor: "#FDFEFE",
+      titleFontColor: "#86B402",
+      labelFontColor: "#86B402"
+    }],
+
+  data: [
+  {
+    type: "column",
+    showInLegend: true,
+    //axisYIndex: 0, //Defaults to Zero
+    name: "Average of Sentiment scoring",
+    xValueFormatString: "####",
+    dataPoints: [
+      { x: 1, y: emo[0],label:names[0]},
+      { x: 2, y: emo[1],label:names[1]},
+      { x: 3, y: emo[2],label:names[2]},
+      { x: 4, y: emo[3],label:names[3]},
+      { x: 5, y: emo[4],label:names[4]},
+      { x: 6, y: emo[5],label:names[5]},
+      { x: 7, y: emo[6],label:names[6]},
+      { x: 8, y: emo[7],label:names[7]},
+      { x: 9, y: emo[8],label:names[8]}
+    ]
+  },
+
+  {
+    type: "column",
+    showInLegend: true,
+    axisYType: "secondary",
+    //axisYIndex: 0, //Defaults to Zero
+    name: "Smoking rate",
+    xValueFormatString: "####",
+    dataPoints: [
+
+
+      { x: 1, y: smok[0],label:names[0]},
+      { x: 2, y: smok[1],label:names[1]},
+      { x: 3, y: smok[2],label:names[2]},
+      { x: 4, y: smok[3],label:names[3]},
+      { x: 5, y: smok[4],label:names[4]},
+      { x: 6, y: smok[5],label:names[5]},
+      { x: 7, y: smok[6],label:names[6]},
+      { x: 8, y: smok[7],label:names[7]},
+      { x: 9, y: smok[8],label:names[8]}
+    ]
+  },
+
+
+  ]
+  });
+
+  chart.render();
+}
+
+</script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</head>
+<body>
+<!Navigation>
+<nav class="navbar navbar-inverse" role="navigation">
+   <ul id="myTab" class="nav navbar-nav">
+      <li class="active">
+         <a href="#home" data-toggle="tab" class="navbar-brand" onclick="window.location='index.html'">Home</a>
+          <li><a href="#" onclick="window.location='income.html'">Income</a></li>
+
+         <li><a href="#" onclick="window.location='education.html'">Education</a></li>
+
+         <li><a href="#" onclick="window.location='smoking.html'">Smoking</a></li>
+
+
+
+
+
+
+
+   </ul>
+</nav>
+<h3 style="text-align:center;"> Enter the area name in Australia <select id="cars" style="position: center; top: 8px; left: 5px;" >
+       <option value="Australia">Australia</option>
+       <option value="NSW">NSW</option>
+       <option value="VIC">VIC</option>
+       <option value="QLD">QLD</option>
+       <option value="ACT">ACT</option>
+       <option value="WA">WA</option>
+       <option value="TAS">TAS</option>
+       <option value="SA">SA</option>
+       <option value="NT">NT</option>
+       <input type="button" value="search" name="search" onclick="draw()" ><br><br>
+    <input type="submit" value="test" name="test" onclick="test()" ><br><br>
+      </select></h3>
+<div id="chartContainer" style="height: 300px; width: 100%;">
+</div>
+</body>
+</html>
