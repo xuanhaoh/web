@@ -42,8 +42,6 @@ var names=[]
      console.log(emo);
 
 
-
-
  //以下是画图的部分
   var chart = new CanvasJS.Chart("chartContainer",{
     title:{
@@ -108,8 +106,6 @@ var names=[]
     name: "Smoking rate",
     xValueFormatString: "####",
     dataPoints: [
-
-
       { x: 1, y: smok[0],label:names[0]},
       { x: 2, y: smok[1],label:names[1]},
       { x: 3, y: smok[2],label:names[2]},
@@ -120,10 +116,7 @@ var names=[]
       { x: 8, y: smok[7],label:names[7]}
     ]
   },
-
-
-  ]
-  });
+  ]});
 
   chart.render();
 }
@@ -142,13 +135,6 @@ var names=[]
          <li><a href="#" onclick="window.location='education.html'">Education</a></li>
 
          <li><a href="#" onclick="window.location='smoking.html'">Smoking</a></li>
-
-
-
-
-
-
-
    </ul>
 </nav>
 <h3 style="text-align:center;"> Enter the area name in Australia <select id="place" style="position: center; top: 8px; left: 5px;" >
@@ -161,7 +147,6 @@ var names=[]
        <option value="TAS">TAS</option>
        <option value="SA">SA</option>
        <option value="NT">NT</option>
-        <p>  </p>
        <input type="button" value="search" name="search" onclick="draw()" ><br><br>
       </select></h3>
 <div id="chartContainer" style="height: 300px; width: 100%;">
