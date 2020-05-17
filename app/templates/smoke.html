@@ -13,13 +13,15 @@ var names=[]
     names=[]
     emo=[]
      smok=[]
+     var n = {};
      var label = document.getElementById("place"); //e=label
-     var n = label.options[label.selectedIndex].value;
+     n['place'] = label.options[label.selectedIndex].value;
+     n['factor'] = 'smoking';
      var flask_data;
     $.ajax({
         type: 'POST',
-        url: "/test",
-        data: n,
+        url: "/backend",
+        data:JSON.stringify(n),
         dataType: 'json', //注意：这里是指希望服务端返回json格式的数据
         async: false,
         success: function(data) {
@@ -33,7 +35,8 @@ var names=[]
      console.log(flask_data)
      for(var k in flask_data){
          names.push(k);
-         emo.push(flask_data[k]);
+         emo.push(flask_data[k][0]);
+         smok.push(flask_data[k][1]);
      }
      while(names.length<8){
          names.push(" ")

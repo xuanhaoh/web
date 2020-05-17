@@ -43,8 +43,8 @@ def backend():
     if request.method == 'GET':
         area = request.args.get("area")
         factor = request.args.get("factor")
-    elif request.method == 'GET':
-        data = request.get_data()
+    elif request.method == 'POST':
+        data = json.loads(request.get_data(as_text=True))
         area = data['place']
         factor = data['factor']
     else:
@@ -69,8 +69,10 @@ def backend():
                 aurin_result = aurin_response.json()['docs'][0]
                 final_result[k] = [ordered_result[k]['value'], aurin_result[factor_lookup[factor]['rate']]]
                 if len(final_result) == limit:
-                    return json.dumps(final_result)
-    return json.dumps(final_result)
+                    print(2)
+                    return json.dumps(final_result, ensure_ascii=False)
+    print(final_result)
+    return json.dumps(final_result, ensure_ascii=False)
 
 
 @app.route('/test', methods=['POST', 'GET'])
