@@ -69,9 +69,7 @@ def backend():
                 aurin_result = aurin_response.json()['docs'][0]
                 final_result[k] = [ordered_result[k]['value'], aurin_result[factor_lookup[factor]['rate']]]
                 if len(final_result) == limit:
-                    print(2)
                     return json.dumps(final_result, ensure_ascii=False)
-    print(final_result)
     return json.dumps(final_result, ensure_ascii=False)
 
 
