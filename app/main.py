@@ -90,7 +90,7 @@ def test():
         l = sorted(c.items(), key=lambda item:item[1], reverse=True)
         if len(l)>8:
             for i in range(0, 8):
-                tem[l[i][0]] = d[l[i][0]]
+                tem[l[i][0]] = d[l[i][0]]+0.2  # base +0.2
             d = tem
         return json.dumps(d, ensure_ascii=False)
 
