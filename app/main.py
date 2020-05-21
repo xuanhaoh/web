@@ -3,7 +3,10 @@ from flask import request
 from flask import render_template
 import requests
 import json
+import pandas as pd
 from collections import OrderedDict
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LinearRegression
 
 app = Flask(__name__)
 
@@ -15,13 +18,21 @@ twitter_view = 'by_place'
 limit = 8
 
 country = 'Australia'
-state = ['NSW', 'QLD', 'SA', 'TAS', 'VIC', 'WA', 'ACT', 'NT']
+state = ['NSW', 'QLD', 'SA', 'TAS', 'VIC', 'WA', 'NT']
 short_name = {'New South Wales': 'NSW', 'Queensland': 'QLD', 'South Australia': 'SA', 'Tasmania': 'TAS',
               'Victoria': 'VIC', 'Western Australia': 'WA', 'Australian Capital Territory': 'ACT', 'Northern Territory': 'NT'}
-factor_lookup = {'alcohol': {'database': 'aurin_health',
+factors = ['income', 'education', 'alcohol', 'smoking', 'obesity']
+factor_lookup = {'income': {'database': 'aurin_income', 'design': 'by_place', 'view': 'income',
+                            'state': 'state', 'lga': 'Name', 'count': 'income_aud_2014_15', 'rate': 'mean_aud_2014_15'},
+                 'education': {'database': 'aurin_education', 'design': 'by_place', 'view': 'education',
+                               'state': 'State', 'lga': 'Name', 'count': 'Persons_Bachelor_Degree_Level_Total',
+                               'rate': 'Persons_With_Post_School_Qualifications_Bachelor_Degree__'},
+                 'alcohol': {'database': 'aurin_health', 'design': 'by_place', 'view': 'alcohol',
                              'state': 'ste_name', 'lga': 'lga_name', 'count': 'alchl_p_1_count', 'rate': 'alchl_p_2_asr'},
                  'smoking': {'database': 'aurin_health', 'design': 'by_place', 'view': 'smoking',
-                             'state': 'ste_name', 'lga': 'lga_name', 'count': 'smkrs_p_1_count', 'rate': 'smkrs_p_2_asr'}}
+                             'state': 'ste_name', 'lga': 'lga_name', 'count': 'smkrs_p_1_count', 'rate': 'smkrs_p_2_asr'},
+                 'obesity': {'database': 'aurin_health', 'design': 'by_place', 'view': 'obesity',
+                             'state': 'ste_name', 'lga': 'lga_name', 'count': 'obese_p_1_count', 'rate': 'obese_p_2_asr'}}
 
 
 @app.route('/')
@@ -32,14 +43,42 @@ def index():
 @app.route('/backend', methods=['POST', 'GET'])
 def backend():
     if request.method == 'GET':
+        analyze = request.args.get("analyze")
         place = request.args.get("place")
         factor = request.args.get("factor")
     elif request.method == 'POST':
         data = json.loads(request.get_data(as_text=True))
+        analyze = data['analyze']
         place = data['place']
         factor = data['factor']
     else:
         return 'Method not allowed!'
+
+    if analyze:
+        places_df = []
+        for place in state:
+            place_df = []
+            for factor in factors:
+                print(place + ' ' + factor + ' start')
+                response = requests.get('http://{}:5000/backend?place={}&factor={}'.format('localhost', place, factor)).json()
+                factor_df = pd.DataFrame.from_dict(response).T
+                factor_df.columns = ['sentiment', factor]
+                factor_df = [factor_df.drop(['sentiment'], axis=1), factor_df['sentiment']]
+                place_df.append(factor_df[0])
+            place_df.append(factor_df[1])
+            place_df = pd.concat(place_df, axis=1)
+            places_df.append(place_df)
+        places_df = pd.concat(places_df).dropna()
+        x = places_df.drop('sentiment', axis=1)
+        y = places_df['sentiment']
+        mms = MinMaxScaler()
+        x = pd.DataFrame(mms.fit_transform(x), index=x.index, columns=x.columns)
+        print(x)
+        model = LinearRegression()
+        model.fit(x, y)
+        feature_importance = {factor: importance for factor, importance in zip(factors, model.coef_)}
+        return {'data': places_df.T.to_dict(), 'result': feature_importance}
+        # return json.dumps({'data': places_df.T.to_dict(), 'result': feature_importance}, ensure_ascii=False)
 
     if place == country:
         factor_args = factor_lookup[factor]
