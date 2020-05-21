@@ -7,6 +7,7 @@ import pandas as pd
 from collections import OrderedDict
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 app = Flask(__name__)
 
@@ -18,7 +19,7 @@ twitter_view = 'by_place'
 limit = 8
 
 country = 'Australia'
-state = ['NSW', 'QLD', 'SA', 'TAS', 'VIC', 'WA', 'NT']
+state = ['NSW', 'QLD', 'SA', 'TAS', 'VIC', 'WA', 'ACT', 'NT']
 short_name = {'New South Wales': 'NSW', 'Queensland': 'QLD', 'South Australia': 'SA', 'Tasmania': 'TAS',
               'Victoria': 'VIC', 'Western Australia': 'WA', 'Australian Capital Territory': 'ACT', 'Northern Territory': 'NT'}
 factors = ['income', 'education', 'alcohol', 'smoking', 'obesity']
@@ -48,7 +49,7 @@ def backend():
         factor = request.args.get("factor")
     elif request.method == 'POST':
         data = json.loads(request.get_data(as_text=True))
-        analyze = data['analyze']
+        analyze = ''
         place = data['place']
         factor = data['factor']
     else:
@@ -60,7 +61,7 @@ def backend():
             place_df = []
             for factor in factors:
                 print(place + ' ' + factor + ' start')
-                response = requests.get('http://{}:5000/backend?place={}&factor={}'.format('localhost', place, factor)).json()
+                response = requests.get('http://{}:80/backend?place={}&factor={}'.format(address, place, factor)).json()
                 factor_df = pd.DataFrame.from_dict(response).T
                 factor_df.columns = ['sentiment', factor]
                 factor_df = [factor_df.drop(['sentiment'], axis=1), factor_df['sentiment']]
@@ -76,6 +77,7 @@ def backend():
         print(x)
         model = LinearRegression()
         model.fit(x, y)
+        print(mean_squared_error(y, model.predict(x)))
         feature_importance = {factor: importance for factor, importance in zip(factors, model.coef_)}
         return {'data': places_df.T.to_dict(), 'result': feature_importance}
         # return json.dumps({'data': places_df.T.to_dict(), 'result': feature_importance}, ensure_ascii=False)
@@ -89,6 +91,18 @@ def backend():
         aurin_result = {row['key']: row['value'][0] / row['value'][1] for row in aurin_response.json()['rows']}
         final_result = {row['key']: [row['value']['sum'] / row['value']['count'], aurin_result[short_name[row['key']].lower()]]
                         for row in twitter_response.json()['rows'] if row['key'] in short_name.keys()}
+    elif place == 'ACT':
+        factor_args = factor_lookup[factor]
+        twitter_response = requests.get('http://{}:5984/{}/_design/{}/_view/{}?group=True'
+                                        .format(address, twitter_database, twitter_view, place))
+        twitter_result = {row['key']: {'value': row['value']['sum'] / row['value']['count'],
+                                       'count': row['value']['count']} for row in twitter_response.json()['rows'] if row['key'] == 'Canberra'}
+        aurin_response = requests.post('http://{}:5984/{}/_find'.format(address, factor_args['database']),
+                                       headers={'Content-Type': 'application/json'},
+                                       json={'selector': {factor_args['lga']: {'$regex': r'Unincorporated ACT'}},
+                                             'fields': [factor_args['lga'], factor_args['rate']]})
+        aurin_result = aurin_response.json()['docs'][0]
+        final_result = {'Canberra': [twitter_result['Canberra']['value'], aurin_result[factor_args['rate']]]}
     elif place in state:
         factor_args = factor_lookup[factor]
         twitter_response = requests.get('http://{}:5984/{}/_design/{}/_view/{}?group=True'
@@ -106,10 +120,11 @@ def backend():
                 aurin_result = aurin_response.json()['docs'][0]
                 final_result[k] = [ordered_result[k]['value'], aurin_result[factor_args['rate']]]
                 if len(final_result) == limit:
-                    return json.dumps(final_result, ensure_ascii=False)
+                    break
     else:
         return 'Place not found!'
 
+    final_result = {x[0]: [(x[1][0] + 1) * 50, x[1][1]] for x in final_result.items()}
     return json.dumps(final_result, ensure_ascii=False)
 
 
