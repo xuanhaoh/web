@@ -16,7 +16,7 @@ var names=[]
      var n = {};
      var label = document.getElementById("place"); //e=label
      n['place'] = label.options[label.selectedIndex].value;
-     n['factor'] = 'smoking';
+     n['factor'] = 'income';
      var flask_data;
     $.ajax({
         type: 'POST',
@@ -106,7 +106,7 @@ var names=[]
     showInLegend: true,
     axisYType: "secondary",
     //axisYIndex: 0, //Defaults to Zero
-    name: "Smoking rate",
+    name: "Average income",
     xValueFormatString: "####",
     dataPoints: [
       { x: 1, y: smok[0],label:names[0]},

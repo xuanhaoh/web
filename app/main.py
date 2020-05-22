@@ -128,10 +128,34 @@ def backend():
     return json.dumps(final_result, ensure_ascii=False)
 
 
-@app.route('/smoke', methods=['POST', 'GET'])
+@app.route('/smoke')
 def smoke():
-    if request.method == 'GET':
-        return render_template('smoke.html')
+    return render_template('smoke.html')
+
+
+@app.route('/income')
+def income():
+    return render_template('income.html')
+
+
+@app.route('/alcohol')
+def alcohol():
+    return render_template('alcohol.html')
+
+
+@app.route('/obesity')
+def obsesity():
+    return render_template('obesity.html')
+
+
+@app.route('/education')
+def education():
+    return render_template('education.html')
+
+
+@app.route('/analyse')
+def education():
+    return render_template('analyse.html')
 
 
 if __name__ == '__main__':
