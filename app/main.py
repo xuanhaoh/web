@@ -44,43 +44,14 @@ def index():
 @app.route('/backend', methods=['POST', 'GET'])
 def backend():
     if request.method == 'GET':
-        analyze = request.args.get("analyze")
         place = request.args.get("place")
         factor = request.args.get("factor")
     elif request.method == 'POST':
         data = json.loads(request.get_data(as_text=True))
-        analyze = ''
         place = data['place']
         factor = data['factor']
     else:
         return 'Method not allowed!'
-
-    if analyze:
-        places_df = []
-        for place in state:
-            place_df = []
-            for factor in factors:
-                print(place + ' ' + factor + ' start')
-                response = requests.get('http://{}:80/backend?place={}&factor={}'.format(address, place, factor)).json()
-                factor_df = pd.DataFrame.from_dict(response).T
-                factor_df.columns = ['sentiment', factor]
-                factor_df = [factor_df.drop(['sentiment'], axis=1), factor_df['sentiment']]
-                place_df.append(factor_df[0])
-            place_df.append(factor_df[1])
-            place_df = pd.concat(place_df, axis=1)
-            places_df.append(place_df)
-        places_df = pd.concat(places_df).dropna()
-        x = places_df.drop('sentiment', axis=1)
-        y = places_df['sentiment']
-        mms = MinMaxScaler()
-        x = pd.DataFrame(mms.fit_transform(x), index=x.index, columns=x.columns)
-        print(x)
-        model = LinearRegression()
-        model.fit(x, y)
-        print(mean_squared_error(y, model.predict(x)))
-        feature_importance = {factor: importance for factor, importance in zip(factors, model.coef_)}
-        return {'data': places_df.T.to_dict(), 'result': feature_importance}
-        # return json.dumps({'data': places_df.T.to_dict(), 'result': feature_importance}, ensure_ascii=False)
 
     if place == country:
         factor_args = factor_lookup[factor]
@@ -128,6 +99,35 @@ def backend():
     return json.dumps(final_result, ensure_ascii=False)
 
 
+@app.route('/backend/analyze', methods=['POST', 'GET'])
+def analyze():
+    places_df = []
+    for place in state:
+        place_df = []
+        for factor in factors:
+            print(place + ' ' + factor + ' start')
+            response = requests.get('http://{}:5000/backend?place={}&factor={}'.format('localhost', place, factor)).json()
+            factor_df = pd.DataFrame.from_dict(response).T
+            factor_df.columns = ['sentiment', factor]
+            factor_df = [factor_df.drop(['sentiment'], axis=1), factor_df['sentiment']]
+            place_df.append(factor_df[0])
+        place_df.append(factor_df[1])
+        place_df = pd.concat(place_df, axis=1)
+        places_df.append(place_df)
+    places_df = pd.concat(places_df).dropna()
+    x = places_df.drop('sentiment', axis=1)
+    y = places_df['sentiment']
+    mms = MinMaxScaler()
+    x = pd.DataFrame(mms.fit_transform(x), index=x.index, columns=x.columns)
+    print(x)
+    model = LinearRegression()
+    model.fit(x, y)
+    print(mean_squared_error(y, model.predict(x)))
+    feature_importance = {factor: importance for factor, importance in zip(factors, model.coef_)}
+    # return {'data': places_df.T.to_dict(), 'result': feature_importance}
+    return json.dumps({'data': places_df.T.to_dict(), 'result': feature_importance}, ensure_ascii=False)
+
+
 @app.route('/smoke')
 def smoke():
     return render_template('smoke.html')
@@ -159,4 +159,4 @@ def analyse():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

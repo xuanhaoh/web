@@ -13,14 +13,13 @@ var aly=[]
     aly = []
      var flask_data;
     $.ajax({
-        type: 'POST',
-        url: "/backend",
-        data:"analyse",
+        type: 'GET',
+        url: "/backend/analyze",
         dataType: 'json', //注意：这里是指希望服务端返回json格式的数据
         async: false,
         success: function(data) {
             console.log(data)
-            flask_data = data// 这里的data就是json格式的数据
+            flask_data = data['result']// 这里的data就是json格式的数据
         },
         error: function(xhr, status, error) {
             console.log(error);
@@ -30,9 +29,6 @@ var aly=[]
      for(var k in flask_data){
          names.push(k);
          aly.push(flask_data[k])
-     }
-     while(names.length<8){
-         names.push(" ")
      }
 
 
@@ -72,10 +68,7 @@ var aly=[]
       { x: 2, y: aly[1],label:names[1]},
       { x: 3, y: aly[2],label:names[2]},
       { x: 4, y: aly[3],label:names[3]},
-      { x: 5, y: aly[4],label:names[4]},
-      { x: 6, y: aly[5],label:names[5]},
-      { x: 7, y: aly[6],label:names[6]},
-      { x: 8, y: aly[7],label:names[7]}
+      { x: 5, y: aly[4],label:names[4]}
     ]
   },
   ]});
