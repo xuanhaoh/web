@@ -4,10 +4,10 @@ from flask import render_template
 import requests
 import json
 from collections import OrderedDict
-# from sklearn.preprocessing import MinMaxScaler
-# from sklearn.linear_model import LinearRegression
-# from sklearn.metrics import mean_squared_error
-# import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+import pandas as pd
 
 app = Flask(__name__)
 
