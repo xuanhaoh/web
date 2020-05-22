@@ -5,7 +5,7 @@ import requests
 import json
 from collections import OrderedDict
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, BayesianRidge
 from sklearn.metrics import mean_squared_error
 import pandas as pd
 
@@ -16,7 +16,7 @@ username = 'group63'
 password = '123'
 twitter_database = 'twitter_stream_processed'
 twitter_view = 'by_place'
-limit = 8
+# limit = 8
 
 country = 'Australia'
 state = ['NSW', 'QLD', 'SA', 'TAS', 'VIC', 'WA', 'ACT', 'NT']
@@ -46,10 +46,15 @@ def backend():
     if request.method == 'GET':
         place = request.args.get("place")
         factor = request.args.get("factor")
+        if request.args.get("limit"):
+            limit = False
+        else:
+            limit = 8
     elif request.method == 'POST':
         data = json.loads(request.get_data(as_text=True))
         place = data['place']
         factor = data['factor']
+        limit = 8
     else:
         return 'Method not allowed!'
 
@@ -90,7 +95,7 @@ def backend():
             if aurin_response.json()['docs']:
                 aurin_result = aurin_response.json()['docs'][0]
                 final_result[k] = [ordered_result[k]['value'], aurin_result[factor_args['rate']]]
-                if len(final_result) == limit:
+                if limit and len(final_result) == limit:
                     break
     else:
         return 'Place not found!'
@@ -99,32 +104,26 @@ def backend():
     return json.dumps(final_result, ensure_ascii=False)
 
 
+@app.route('/backend/result', methods=['POST', 'GET'])
+def result():
+    _id = requests.get('http://{}:5984/{}/_all_docs'.format(address, 'analyse')).json()['rows'][-1]['id']
+    places_df = requests.post('http://{}:5984/{}/_find'.format(address, 'analyse'),
+                              headers={'Content-Type': 'application/json'},
+                              json={'selector': {'_id': _id}}).json()['docs'][0]
+    places_df.pop('_id')
+    places_df.pop('_rev')
+    places_df = pd.DataFrame.from_dict(places_df).T
+    model = run_model(places_df)
+    feature_importance = {factor: importance for factor, importance in zip(factors, model.coef_)}
+    return json.dumps({'data': places_df.T.to_dict(), 'result': feature_importance}, ensure_ascii=False)
+
+
 @app.route('/backend/analyze', methods=['POST', 'GET'])
 def analyze():
-    places_df = []
-    for place in state:
-        place_df = []
-        for factor in factors:
-            print(place + ' ' + factor + ' start')
-            response = requests.get('http://{}:5000/backend?place={}&factor={}'.format('localhost', place, factor)).json()
-            factor_df = pd.DataFrame.from_dict(response).T
-            factor_df.columns = ['sentiment', factor]
-            factor_df = [factor_df.drop(['sentiment'], axis=1), factor_df['sentiment']]
-            place_df.append(factor_df[0])
-        place_df.append(factor_df[1])
-        place_df = pd.concat(place_df, axis=1)
-        places_df.append(place_df)
-    places_df = pd.concat(places_df).dropna()
-    x = places_df.drop('sentiment', axis=1)
-    y = places_df['sentiment']
-    mms = MinMaxScaler()
-    x = pd.DataFrame(mms.fit_transform(x), index=x.index, columns=x.columns)
-    print(x)
-    model = LinearRegression()
-    model.fit(x, y)
-    print(mean_squared_error(y, model.predict(x)))
+    places_df = get_data()
+    requests.post('http://{}:5984/{}'.format(address, 'analyse'), json=places_df.T.to_dict())
+    model = run_model(places_df)
     feature_importance = {factor: importance for factor, importance in zip(factors, model.coef_)}
-    # return {'data': places_df.T.to_dict(), 'result': feature_importance}
     return json.dumps({'data': places_df.T.to_dict(), 'result': feature_importance}, ensure_ascii=False)
 
 
@@ -156,6 +155,35 @@ def education():
 @app.route('/analyse')
 def analyse():
     return render_template('analyse.html')
+
+
+def get_data():
+    places_df = []
+    for place in state:
+        place_df = []
+        for factor in factors:
+            print(place + ' ' + factor + ' start')
+            response = requests.get(
+                'http://{}:5000/backend?place={}&factor={}&limit=False'.format('localhost', place, factor)).json()
+            factor_df = pd.DataFrame.from_dict(response).T
+            factor_df.columns = ['sentiment', factor]
+            factor_df = [factor_df.drop(['sentiment'], axis=1), factor_df['sentiment']]
+            place_df.append(factor_df[0])
+        place_df.append(factor_df[1])
+        place_df = pd.concat(place_df, axis=1)
+        places_df.append(place_df)
+    places_df = pd.concat(places_df).dropna()
+    return places_df
+
+
+def run_model(places_df):
+    x = places_df.drop('sentiment', axis=1)
+    y = places_df['sentiment']
+    mms = MinMaxScaler()
+    x = pd.DataFrame(mms.fit_transform(x), index=x.index, columns=x.columns)
+    model = LinearRegression()
+    model.fit(x, y)
+    return model
 
 
 if __name__ == '__main__':
