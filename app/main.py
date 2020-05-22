@@ -3,11 +3,11 @@ from flask import request
 from flask import render_template
 import requests
 import json
-import pandas as pd
 from collections import OrderedDict
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
+# from sklearn.preprocessing import MinMaxScaler
+# from sklearn.linear_model import LinearRegression
+# from sklearn.metrics import mean_squared_error
+# import pandas as pd
 
 app = Flask(__name__)
 
@@ -154,9 +154,15 @@ def education():
 
 
 @app.route('/analyse')
-def education():
+def analyse():
     return render_template('analyse.html')
 
+@app.route('/test', methods=['GET','POST'])
+def test():
+    if request.method == 'POST':
+        data = request.get_data(as_text=True)
+    a = {'a':1, 'b':2, 'c':3}
+    return json.dumps(a, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)

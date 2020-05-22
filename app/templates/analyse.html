@@ -1,10 +1,153 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}" >
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+var names=[]
+var aly=[]
+
+ function draw() {
+    names=[]
+    aly = []
+     var flask_data;
+    $.ajax({
+        type: 'POST',
+        url: "/test",
+        data:"analyse",
+        dataType: 'json', //注意：这里是指希望服务端返回json格式的数据
+        async: false,
+        success: function(data) {
+            console.log(data)
+            flask_data = data// 这里的data就是json格式的数据
+        },
+        error: function(xhr, status, error) {
+            console.log(error);
+        }
+    });
+     console.log(flask_data)
+     for(var k in flask_data){
+         names.push(k);
+         aly.push(flask_data[k])
+     }
+     while(names.length<8){
+         names.push(" ")
+     }
+
+
+ //以下是画图的部分
+  var chart = new CanvasJS.Chart("chartContainer",{
+    title:{
+      text: "Analyse results"
+    },
+    axisX:{
+      valueFormatString: "####",
+      interval: 1
+    },
+    axisY:[{
+      title: "Analyse results",
+      lineColor: "#369EAD",
+      titleFontColor: "#369EAD",
+      labelFontColor: "#369EAD"
+    },
+    {
+      title: "",
+      logarithmic: true,
+      lineColor: "#FDFEFE ",
+      titleFontColor: "#C24642",
+      labelFontColor: "#C24642"
+    }],
+
+
+  data: [
+  {
+    type: "column",
+    showInLegend: true,
+    //axisYIndex: 0, //Defaults to Zero
+    name: "Analyse results",
+    xValueFormatString: "####",
+    dataPoints: [
+      { x: 1, y: aly[0],label:names[0]},
+      { x: 2, y: aly[1],label:names[1]},
+      { x: 3, y: aly[2],label:names[2]},
+      { x: 4, y: aly[3],label:names[3]},
+      { x: 5, y: aly[4],label:names[4]},
+      { x: 6, y: aly[5],label:names[5]},
+      { x: 7, y: aly[6],label:names[6]},
+      { x: 8, y: aly[7],label:names[7]}
+    ]
+  },
+  ]});
+  chart.render();
+}
+
+</script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </head>
 <body>
+<!Navigation>
+<nav class="navbar navbar-inverse" role="navigation">
+   <ul id="myTab" class="nav navbar-nav">
+      <li class="active">
+         <a href="#home" data-toggle="tab" class="navbar-brand" onclick="location.href=('/')">Home</a>
 
+         <li><a href="#" onclick="location.href=('/education')">Education</a></li>
+
+         <li><a href="#" onclick="location.href=('/income')">Income</a></li>
+
+         <li><a href="#" onclick="location.href=('/smoke')">Smoking</a></li>
+
+         <li><a href="#" onclick="location.href=('/obesity')">Obesity</a></li>
+
+         <li><a href="#" onclick="location.href=('/alcohol')">Alcohol</a></li>
+
+         <li><a href="#" onclick="location.href=('/analyse')">Analyse</a></li>
+   </ul>
+</nav>
+<!First page: text & graph>
+<div id="myTabContent1" class="tab-content">
+   <div class="tab-pane fade in active" id="home">
+      <div class="section">
+         <div class="container">
+            <div class="row">
+              <div class="col-md-12">
+                <h2 class="text-inverse">We will display our marchine learning here</h2>
+                <p> Some descriptions.</p>
+                <div class="section">
+                  <div class="container">
+                    <div class="row">
+                      <div class="col-md-12">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+               </div>
+               <div class="col-md-9">
+                  <div id="multiline_div" style="width: 250px; height: 180px;"></div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<!Page devider>
+<div class="section">
+   <div class="container">
+      <div class="row">
+         <div class="col-md-12">
+            <hr>
+         </div>
+      </div>
+   </div>
+</div>
+<h3 style="text-align:center;">
+    <p><font color="red" size="2">* Please notice that it may cost 2 minutes to analyse by machine learning</font>
+
+    <input type="button" value=" Run! " name="run" onclick="draw()" style="border-radius: 15%"><br><br>
+</h3>
+<div id="chartContainer" style="height: 300px; width: 100%;">
+</div>
 </body>
 </html>
