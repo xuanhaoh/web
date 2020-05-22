@@ -157,12 +157,6 @@ def education():
 def analyse():
     return render_template('analyse.html')
 
-@app.route('/test', methods=['GET','POST'])
-def test():
-    if request.method == 'POST':
-        data = request.get_data(as_text=True)
-    a = {'a':1, 'b':2, 'c':3}
-    return json.dumps(a, ensure_ascii=False)
 
 if __name__ == '__main__':
     app.run(debug=True)
