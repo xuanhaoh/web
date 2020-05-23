@@ -41,7 +41,7 @@
                         <p class="text-inverse"><font color="black">Go and discover sentimenr analysis here.</font></p>
                         <br>
                         <br>
-                      
+                      <a class="btn btn-lg btn-primary" href="#detail">Go!</a>
                     </div>
                 </div>
             </div>
@@ -82,39 +82,14 @@
 <div class="section">
    <div class="container">
       <div class="row">
-         <div class="col-md-4">
+         <div class="col-md-12">
             <h2 class="text-muted">Architecture Design</h2>
-            <p>First picture shows the all intances and related configurations. The second one displays the process of fetching Tweets. The last one shows how could web server response requests and access various databases.</p><br/>
-       
-         
-           
+            <p>The factors we choose are obesity rate, education (graduation rate of bachelor), smoking rate, alcohol abuse rate and average income in each corresponding area where twitter users post their tweets.
+                Firstly, the obesity and alcohol abuse can represent the diet and exercise of people in the corresponding area, and how the diet and exercise influence emotion. Secondly, the education data could represent whether the people accepted high level of education are happier than those who doesn't accept. Thirdly, the income could represent whether high income could bring more happiness or not.
+                At last, we want to explore the relationship between sentiment and smoking rate. All data mentioned above are from AURIN.
+            </p><br/>
          </div>
-         <div class="col-md-8">
 
-<div id="myCarousel" class="carousel slide">
-   <ol class="carousel-indicators">
-      <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-      <li data-target="#myCarousel" data-slide-to="1"></li>
-      <li data-target="#myCarousel" data-slide-to="2"></li>
-   </ol>   
-   <div class="carousel-inner">
-      <div class="item active">
-         <img src="1.png" alt="First slide">
-      </div>
-      <div class="item">
-         <img src="2.png" alt="Second slide">
-      </div>
-      <div class="item">
-         <img src="3.png" alt="Third slide">
-      </div>
-   </div>
-   <a class="carousel-control left" href="#myCarousel" 
-      data-slide="prev">&lsaquo;</a>
-   <a class="carousel-control right" href="#myCarousel" 
-      data-slide="next">&rsaquo;</a>
-</div> 
-
-         </div>
       </div>
    </div>
 </div>
@@ -141,52 +116,47 @@
       </div>
       <div class="row">
          <div class="col-md-2">
-            <img src="tou.png"
+            <img src="{{ url_for('static', filename='hg.jpeg') }}"
             class="img-circle img-responsive">
          </div>
          <div class="col-md-4">
             <h3 class="text-left">Xuanhao Hu</h3>
-            <p class="text-left">Data analysist<br/>Scenario designer</p>
          </div>
          <div class="col-md-2">
-            <img src="tou.png"
+            <img src="{{ url_for('static', filename='cyx.jpeg') }}"
             class="img-circle img-responsive">
          </div>
          <div class="col-md-4">
             <h3 class="text-left">Yuxin Chen</h3>
-            <p class="text-left">Data analysist<br/>Web service manager</p>
          </div>
       </div>
 
 
       <div class="row">
          <div class="col-md-2">
-            <img src="tou.png"
+            <img src="{{ url_for('static', filename='d.jpeg') }}"
             class="img-circle img-responsive">
          </div>
          <div class="col-md-4">
             <h3 class="text-left">Xiaodong Deng</h3>
-            <p class="text-left">Data collector<br/>Data manager</p>
          </div>
          <div class="col-md-2">
-            <img src="tou.png"
+            <img src="{{ url_for('static', filename='me.jpeg') }}"
             class="img-circle img-responsive">
          </div>
          <div class="col-md-4">
             <h3 class="text-left">Chongjing Zhang</h3>
-            <p class="text-left">Cloud server manager<br/>Instance service initiator</p>
          </div>
       </div>
 
 
       <div class="row">
          <div class="col-md-2">
-            <img src="tou.png"
+            <img src="{{ url_for('static', filename='7.jpeg') }}"
             class="img-circle img-responsive">
          </div>
          <div class="col-md-4">
             <h3 class="text-left">Chengruo Huang</h3>
-            <p class="text-left">Website builder<br/>Web service manager</p>
          </div>
       </div>
 
