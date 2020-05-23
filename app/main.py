@@ -143,7 +143,7 @@ def alcohol():
 
 
 @app.route('/obesity')
-def obsesity():
+def obesity():
     return render_template('obesity.html')
 
 
@@ -164,7 +164,7 @@ def get_data():
         for factor in factors:
             print(place + ' ' + factor + ' start')
             response = requests.get(
-                'http://{}:5000/backend?place={}&factor={}&limit=False'.format('localhost', place, factor)).json()
+                'http://{}:80/backend?place={}&factor={}&limit=False'.format(address, place, factor)).json()
             factor_df = pd.DataFrame.from_dict(response).T
             factor_df.columns = ['sentiment', factor]
             factor_df = [factor_df.drop(['sentiment'], axis=1), factor_df['sentiment']]
