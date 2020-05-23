@@ -155,8 +155,10 @@ var names=[]
             <div class="row">
               <div class="col-md-5">
                 <h2 class="text-inverse">Alcohol</h2>
-                <p> The mental effects of alcohol abuse will vary from person to person. How much a person drinks, how long they have abused alcohol, and the frequency in which they drink will all impact the side effects experienced. The emotional effects of alcohol abuse are depression, irritability, anxiety and social withdrawal.
-Based on the data above, the area with a high alcohol abuse rate have a low sentiment compound score. Therefore, alcohol abuse causes the negative effect on emotion</p>
+                <p> The mental effects of alcohol abuse will vary from person to person. How much a person drinks, how long they have abused alcohol, and the frequency in which they drink will all impact
+                    the side effects experienced. The emotional effects of alcohol abuse are depression, irritability, anxiety and social withdrawal. While sometimes alcohol is a means of entertainment. It's hard to draw a conclusion directly.</p>
+                  <br>So after assumption above, our teams want to dig deep to do a research based on Twitter sentiment analysis and Aurin data in alcohol rate. We plan to analyze data from cities, states and country respectively.
+                  <br><br><a class="btn btn-lg btn-primary" href="#detail">See details</a>
                 <div class="section">
                   <div class="container">
                     <div class="row">
@@ -181,11 +183,14 @@ Based on the data above, the area with a high alcohol abuse rate have a low sent
       <div class="row">
          <div class="col-md-12">
             <hr>
+
          </div>
       </div>
    </div>
 </div>
-<h3 style="text-align:center;"> Enter the area name in Australia <select id="place" style="position: center; top: 8px; left: 5px;" >
+<div class="section" id="detail">
+    <br><br><br><br><br><br>
+    <h3 style="text-align:center;"> Enter the area name in Australia <select id="place" style="position: center; top: 8px; left: 5px;" >
        <option value="Australia">Australia</option>
        <option value="NSW">NSW</option>
        <option value="VIC">VIC</option>
@@ -196,10 +201,13 @@ Based on the data above, the area with a high alcohol abuse rate have a low sent
        <option value="SA">SA</option>
        <option value="NT">NT</option>
       </select>
-
-    <a class="btn btn-lg btn-primary" onclick="draw()">See details</a><br><br>
-</h3>
-<div id="chartContainer" style="height: 300px; width: 100%;">
+        <a class="btn btn-lg btn-primary" onclick="draw()">Explore!</a><br><br>
+    </h3>
+    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br>
 </div>
+
+
+
 </body>
 </html>

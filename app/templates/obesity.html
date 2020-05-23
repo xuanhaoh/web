@@ -153,9 +153,12 @@ var names=[]
       <div class="section">
          <div class="container">
             <div class="row">
-              <div class="col-md-12">
-                <h2 class="text-inverse">We will display our marchine learning here</h2>
-                <p> Some descriptions.</p>
+              <div class="col-md-5">
+                <h2 class="text-inverse">Obesity</h2>
+                <p> Obesity is mainly caused by choice of the diet and the low frequency of exercise. Typically, the obesity diet is fast food and the other high calorie food.
+                    When people with little physical exercise have them, they could not digest the high number of calories, so it might be caused the obesity problem. This is an interesting topic to explore whether this lifestyle could make people happier or not.</p>
+                  <br>So after assumption above, our teams want to dig deep to do a research based on Twitter sentiment analysis and Aurin data in obesity rate. We plan to analyze data from cities, states and country respectively.
+                  <br><br><a class="btn btn-lg btn-primary" href="#detail">See details</a>
                 <div class="section">
                   <div class="container">
                     <div class="row">
@@ -184,7 +187,9 @@ var names=[]
       </div>
    </div>
 </div>
-<h3 style="text-align:center;"> Enter the area name in Australia <select id="place" style="position: center; top: 8px; left: 5px;" >
+<div class="section" id="detail">
+    <br><br><br><br><br><br>
+    <h3 style="text-align:center;"> Enter the area name in Australia <select id="place" style="position: center; top: 8px; left: 5px;" >
        <option value="Australia">Australia</option>
        <option value="NSW">NSW</option>
        <option value="VIC">VIC</option>
@@ -194,10 +199,11 @@ var names=[]
        <option value="TAS">TAS</option>
        <option value="SA">SA</option>
        <option value="NT">NT</option>
-       </select>
-    <input type="button" value="search" name="search" onclick="draw()" ><br><br>
-</h3>
-<div id="chartContainer" style="height: 300px; width: 100%;">
+      </select>
+        <a class="btn btn-lg btn-primary" onclick="draw()">Explore!</a><br><br>
+    </h3>
+    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br>
 </div>
 </body>
 </html>
