@@ -3,20 +3,19 @@ from flask import request
 from flask import render_template
 import requests
 import json
+import os
 from collections import OrderedDict
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.linear_model import LinearRegression, BayesianRidge
-from sklearn.metrics import mean_squared_error
+from sklearn.linear_model import LinearRegression
 import pandas as pd
 
 app = Flask(__name__)
 
-address = '172.26.132.81'
+address = os.getenv('IP', None)
 username = 'group63'
 password = '123'
 twitter_database = 'twitter_stream_processed'
 twitter_view = 'by_place'
-# limit = 8
 
 country = 'Australia'
 state = ['NSW', 'QLD', 'SA', 'TAS', 'VIC', 'WA', 'ACT', 'NT']
