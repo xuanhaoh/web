@@ -1,6 +1,6 @@
 couchdb==1.2
 flask==1.1.1
 pandas==1.0.3
-requests==2.22.0
+requests==2.31.0
 scikit-learn==0.21.3
 uwsgi==2.0.18
